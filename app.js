@@ -124,6 +124,52 @@ loginBtn &&
     }
   });
 
+  // Google Sign-In
+  const googleSignIn= document.getElementById('googleSignIn');
+  googleSignIn && googleSignIn.addEventListener("click",async()=>{
+     const { error } = await client.auth.signInWithOAuth({
+    provider: 'google',
+  });
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Google Sign-In Failed',
+      text: error.message,
+    });
+  }
+  })
+
+  // LinkedIn Sign-In
+const linkedinSignIn= document.getElementById("linkedinSignIn");
+linkedinSignIn && linkedinSignIn.addEventListener("click", async () => {
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'linkedin_oidc'
+  });
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'LinkedIn Sign-In Failed',
+      text: error.message,
+    });
+  }
+});
+
+
+// Facebook Sign-In
+const facebookSignIn= document.getElementById("facebookSignIn")
+facebookSignIn && facebookSignIn.addEventListener("click", async () => {
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'facebook',
+  });
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Facebook Sign-In Failed',
+      text: error.message,
+    });
+  }
+});
+
 // Logout
 const logOutBtn = document.getElementById('logout-btn');
 logOutBtn &&
