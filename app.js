@@ -1,69 +1,153 @@
-const supabaseUrl='https://zxqzjpgemwltbbbajglz.supabase.co';
-const supabaseKey ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4cXpqcGdlbXdsdGJiYmFqZ2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0Mzg4NDQsImV4cCI6MjA2NzAxNDg0NH0.wwSR-8zVPuTFApgNumLGZJn9a6roc3-BjOKxADy-7sw';
+const wrapper = document.querySelector('.warraper');
+const registerLink = document.querySelector('.register-link');
+const loginLink = document.querySelector('.login-link');
+
+registerLink && registerLink.addEventListener("click", () => {
+  wrapper.classList.add('active');
+});
+loginLink && loginLink.addEventListener("click", () => {
+  wrapper.classList.remove('active');
+});
+
+const supabaseUrl = 'https://zxqzjpgemwltbbbajglz.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4cXpqcGdlbXdsdGJiYmFqZ2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0Mzg4NDQsImV4cCI6MjA2NzAxNDg0NH0.wwSR-8zVPuTFApgNumLGZJn9a6roc3-BjOKxADy-7sw';
 
 const { createClient } = supabase;
 const client = createClient(supabaseUrl, supabaseKey);
 
 
-// Handle signup form submission
+// Sign Up
 const signupBtn = document.getElementById('signupBtn');
 signupBtn &&
-	signupBtn.addEventListener('click', async () => {
-		const email = document.getElementById('signup-email');
-		const password = document.getElementById('signup-password');
+  signupBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('signup-email');
+    const password = document.getElementById('signup-password');
 
-		if (email && password) {
-			try {
-				const { data, error } = await client.auth.signUp({
-					email: email.value,
-					password: password.value,
-				});
-				if (data) window.location.href = 'post.html';
-				if (error) throw error;
-			} catch (error) {
-				console.error('Signup error:', error);
-				if (error.message.includes('invalid format')) {
-					alert('Please enter a valid email address');
-				}
-			}
-		} else {
-			alert('Please fill all fields');
-		}
-	});
+    if (email && password) {
+      try {
+        const { data, error } = await client.auth.signUp({
+          email: email.value,
+          password: password.value,
+        });
 
-// Handle login form submission
+        if (error) {
+          throw error;
+        }
+
+        // ✅ Success Alert
+        Swal.fire({
+          icon: 'success',
+          title: 'Signed Up!',
+          text: 'You have successfully signed up!',
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          window.location.href = 'post.html';
+        });
+
+      } catch (error) {
+        console.error('Signup error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Signup Failed!',
+          text: error.message || 'Something went wrong!',
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Empty Fields',
+        text: 'Please fill all fields.',
+      });
+    }
+  });
+
+  
+// Login
 const loginBtn = document.getElementById('loginBtn');
 loginBtn &&
-	loginBtn.addEventListener('click', async () => {
-		const email = document.getElementById('login-email');
-		const password = document.getElementById('login-password');
+  loginBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email');
+    const password = document.getElementById('login-password');
 
-		if (email && password) {
-			try {
-				const { data, error } = await client.auth.signInWithPassword({
-					email: email.value,
-					password: password.value,
-				});
-				if (data) window.location.href = 'post.html';
-				if (error) throw error;
-			} catch (error) {
-				console.error('Login error:', error);
-				if (error.message.includes('invalid format')) {
-					alert('Please enter a valid email address');
-				}
-			}
-		} else {
-			alert('Please fill all fields');
-		}
-	});
+    if (email && password) {
+      try {
+        const { data, error } = await client.auth.signInWithPassword({
+          email: email.value,
+          password: password.value,
+        });
 
-const wrapper = document.querySelector('.warraper');
-const registerLink = document.querySelector('.register-link');
-const loginLink = document.querySelector('.login-link');
+        if (error) {
+          console.error('Login Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed!',
+            text: error.message || 'Invalid credentials.',
+          });
+          return;
+        }
 
-registerLink.addEventListener("click",()=>{
-    wrapper.classList.add('active');
-})
-loginLink.addEventListener("click",()=>{
-    wrapper.classList.remove('active');
-})
+        if (data?.session) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Logged In!',
+            text: 'Login successful!',
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            window.location.href = 'post.html';
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed!',
+            text: 'Please check your credentials.',
+          });
+        }
+
+      } catch (error) {
+        console.error('Login error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed!',
+          text: error.message || 'Something went wrong!',
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Empty Fields',
+        text: 'Please fill all fields.',
+      });
+    }
+  });
+
+// Logout
+const logOutBtn = document.getElementById('logout-btn');
+logOutBtn &&
+  logOutBtn.addEventListener("click", async () => {
+    try {
+      const { error } = await client.auth.signOut();
+      if (error) throw error;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Logged Out!',
+        text: 'You have been logged out.',
+        showConfirmButton: false,
+        timer: 1200,
+      }).then(() => {
+        window.location.href = 'index.html';
+      });
+
+    } catch (error) {
+      console.error('Logout error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Logout Failed!',
+        text: error.message || 'Something went wrong!',
+      });
+    }
+  });
