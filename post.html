@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SignUp & Login </title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-    <h1>welcome</h1> <br>
+      <nav class="navbar">
+    <div class="logo">My Post Application</div>
+    <div class="user-info" id="userInfo">
+      <!-- Populated by JS -->
+    </div>
     <button id="logout-btn">Log out</button>
+  </nav>
 
     <!-- supabase  -->
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -18,6 +23,25 @@
 
    <!-- main file  -->
 <script src="app.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const successType = localStorage.getItem("loginSuccess");
+
+  if (successType) {
+    Swal.fire({
+      icon: 'success',
+      title: `${successType} Sign-In Successful!`,
+      text: `Welcome! You have signed in using ${successType}.`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    // Remove the flag so it doesn't show again on refresh
+    localStorage.removeItem("loginSuccess");
+  }
+</script>
+
 
 </body>
 </html>

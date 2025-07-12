@@ -284,3 +284,29 @@ justify-content: center;
     transform: scale(1.2);
     color: #bba4f6;
 }
+
+.social-login {
+  text-align: center;
+  margin-top: 15px;
+}
+.social-login p {
+  color: #fff;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+.social-icons2 {
+  display: flex;
+  justify-content: center;
+   /* flex-direction: column; */
+ gap: 35px;
+}
+.social-icons2 i {
+  font-size: 34px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.social-icons2 i:hover {
+  color: #bba4f6;
+}
+
