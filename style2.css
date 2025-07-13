@@ -62,6 +62,78 @@ body {
     outline: none;
     border: none;
     border-radius: 40px;
+    transition: 0.7s ease;
+}
+#logout-btn:hover{
+   background:linear-gradient(260deg,#081b29,#bba4f6,#081b29);
+  /* border: 1px solid #bba4f6; */
+}
+.main-container{
+   display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  padding: 20px;
+  color: #bba4f6;
+}
+.container {
+  background: transparent;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #bba4f6;
+  width: 50em;
+  padding: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  font-size: 16px;
+  resize: none;
+  background: transparent;
+  color: #bba4f6;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border: 2px solid #bba4f6;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background:#bba4f6;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.7s ease;
+}
+
+button:hover {
+  background:linear-gradient(260deg,#081b29,#bba4f6,#081b29);
+  /* border: 2px solid #bba4f6; */
+}
+
+.post {
+  margin-top: 20px;
+  background:linear-gradient(60deg,#081b29,#bba4f6,#081b29);
+  padding: 15px;
+  color: #fff;
+  border-radius: 8px;
+  position: relative;
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: red;
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 /* ===== Responsive Design ===== */

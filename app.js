@@ -217,3 +217,42 @@ logOutBtn &&
             });
         }
     });
+
+
+ const postInput = document.getElementById("postInput");
+const addPostBtn = document.getElementById("addPostBtn");
+const postsContainer = document.getElementById("postsContainer");
+
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+function displayPosts() {
+  postsContainer.innerHTML = "";
+  posts.forEach((post, index) => {
+    const postEl = document.createElement("div");
+    postEl.className = "post";
+    postEl.innerHTML = `
+      <p>${post}</p>
+      <button class="deleteBtn" onclick="deletePost(${index})">Delete</button>
+    `;
+    postsContainer.appendChild(postEl);
+  });
+}
+
+function addPost() {
+  const text = postInput.value.trim();
+  if (text === "") return;
+  posts.push(text);
+  localStorage.setItem("posts", JSON.stringify(posts));
+  postInput.value = "";
+  displayPosts();
+}
+
+function deletePost(index) {
+  posts.splice(index, 1);
+  localStorage.setItem("posts", JSON.stringify(posts));
+  displayPosts();
+}
+
+addPostBtn.addEventListener("click", addPost);
+displayPosts();
+   
