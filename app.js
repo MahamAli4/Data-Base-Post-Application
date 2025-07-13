@@ -126,6 +126,7 @@ loginBtn &&
 
 
 // Google Sign-In
+
 document.getElementById('googleSignIn')?.addEventListener("click", async () => {
     localStorage.setItem("loginSuccess", "Google");
     const { error } = await client.auth.signInWithOAuth({
@@ -169,11 +170,12 @@ document.getElementById('facebookSignIn')?.addEventListener("click", async () =>
 
 async function loadUserInfo() {
     const { data: { user } } = await client.auth.getUser();
+    console.log(user); // Debugging
 
     if (user) {
         const userInfo = document.getElementById('userInfo');
-        const name = user.user_metadata.full_name || 'User';
-        const avatar = user.user_metadata.avatar_url || 'https://via.placeholder.com/150';
+        const name = user.user_metadata.full_name || user.user_metadata.name || user.email.split('@')[0];
+        const avatar = user.user_metadata.avatar_url || user.user_metadata.picture || 'https://via.placeholder.com/150';
 
         userInfo.innerHTML = `
           <img src="${avatar}" alt="User Image">
@@ -186,6 +188,7 @@ async function loadUserInfo() {
 }
 
 loadUserInfo();
+
 
 // Logout
 const logOutBtn = document.getElementById('logout-btn');

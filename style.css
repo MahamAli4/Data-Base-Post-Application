@@ -310,3 +310,44 @@ justify-content: center;
   color: #bba4f6;
 }
 
+/* ===== Responsive Design ===== */
+
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .warraper {
+    width: 90%;
+    height: auto;
+    flex-direction: column;
+    margin: 40px auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .warraper .form-box,
+  .warraper .info-text {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    justify-content: flex-start;
+  }
+  .warraper .form-box.register,
+  .warraper .form-box.login {
+    padding: 20px;
+  }
+  .warraper .info-text.login,
+  .warraper .info-text.register {
+    padding: 20px;
+    text-align: center;
+  }
+  .warraper .bg-animate,
+  .warraper .bg-animate2 {
+    display: none;
+  }
+  html, body {
+    height: auto;
+    min-height: 100vh;
+    display: block;
+  }
+}
