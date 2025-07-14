@@ -132,7 +132,8 @@ document.getElementById('googleSignIn')?.addEventListener("click", async () => {
     const { error } = await client.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: window.location.origin + '/post.html'
+            redirectTo: window.location.origin + '/post.html',
+            queryParams :{access_type :'offline',prompt:'consent'}
         }
     });
     if (error) {
@@ -146,7 +147,8 @@ document.getElementById('linkedinSignIn')?.addEventListener("click", async () =>
     const { error } = await client.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
-            redirectTo: window.location.origin + '/post.html'
+            redirectTo: window.location.origin + '/post.html',
+            queryParams :{access_type :'offline',prompt:'consent'}
         }
     });
     if (error) {
@@ -160,7 +162,9 @@ document.getElementById('facebookSignIn')?.addEventListener("click", async () =>
     const { error } = await client.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-            redirectTo: window.location.origin + '/post.html'
+            redirectTo: window.location.origin + '/post.html',
+            queryParams :{access_type :'offline',prompt:'consent'}
+
         }
     });
     if (error) {
@@ -256,3 +260,4 @@ function deletePost(index) {
 addPostBtn.addEventListener("click", addPost);
 displayPosts();
    
+
