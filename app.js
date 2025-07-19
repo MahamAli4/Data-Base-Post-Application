@@ -9,6 +9,8 @@ loginLink && loginLink.addEventListener("click", () => {
     wrapper.classList.remove('active');
 });
 
+
+
 const supabaseUrl = 'https://zxqzjpgemwltbbbajglz.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4cXpqcGdlbXdsdGJiYmFqZ2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0Mzg4NDQsImV4cCI6MjA2NzAxNDg0NH0.wwSR-8zVPuTFApgNumLGZJn9a6roc3-BjOKxADy-7sw';
 
@@ -63,6 +65,20 @@ signupBtn &&
         }
     });
 
+
+// Set up  password Visibility toggle
+// const togglePassword = document.getElementById('togglePassword');
+// const passwordInput = document.getElementById('signup-password');
+// const eyeIcon = document.getElementById('eyeIcon');
+
+// if (togglePassword && passwordInput && eyeIcon) {
+//     togglePassword.addEventListener('click', () => {
+//         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+//         passwordInput.setAttribute('type', type);
+//         eyeIcon.classList.toggle('fa-eye');
+//         eyeIcon.classList.toggle('fa-eye-slash');
+//     });
+// }
 
 // Login
 const loginBtn = document.getElementById('loginBtn');
@@ -133,7 +149,7 @@ document.getElementById('googleSignIn')?.addEventListener("click", async () => {
         provider: 'google',
         options: {
             redirectTo: window.location.origin + '/post.html',
-            queryParams :{access_type :'offline',prompt:'consent'}
+            queryParams: { access_type: 'offline', prompt: 'consent' }
         }
     });
     if (error) {
@@ -148,7 +164,7 @@ document.getElementById('linkedinSignIn')?.addEventListener("click", async () =>
         provider: 'linkedin_oidc',
         options: {
             redirectTo: window.location.origin + '/post.html',
-            queryParams :{access_type :'offline',prompt:'consent'}
+            queryParams: { access_type: 'offline', prompt: 'consent' }
         }
     });
     if (error) {
@@ -163,7 +179,7 @@ document.getElementById('facebookSignIn')?.addEventListener("click", async () =>
         provider: 'facebook',
         options: {
             redirectTo: window.location.origin + '/post.html',
-            queryParams :{access_type :'offline',prompt:'consent'}
+            queryParams: { access_type: 'offline', prompt: 'consent' }
 
         }
     });
@@ -179,7 +195,7 @@ async function loadUserInfo() {
     if (user) {
         const userInfo = document.getElementById('userInfo');
         const name = user.user_metadata.full_name || user.user_metadata.name || user.email.split('@')[0];
-        const avatar = user.user_metadata.avatar_url || user.user_metadata.picture || 'https://via.placeholder.com/150';
+        const avatar = user.user_metadata.avatar_url || user.user_metadata.picture || './images/images.jpg';
 
         userInfo.innerHTML = `
           <img src="${avatar}" alt="User Image">
@@ -192,6 +208,8 @@ async function loadUserInfo() {
 }
 
 loadUserInfo();
+
+
 
 
 // Logout
@@ -223,41 +241,94 @@ logOutBtn &&
     });
 
 
- const postInput = document.getElementById("postInput");
-const addPostBtn = document.getElementById("addPostBtn");
-const postsContainer = document.getElementById("postsContainer");
+// check for returning Google Oauth Redirect 
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.location.hash.includes('access_token')) {
+        const {
+            data: { session },
+        } = await client.auth.getSession();
+        if (session) window.location.href = 'post.html';
+    }
+    if (!window.location.pathname.includes('index.html')) {
+        loadUserInfo();
+    }
+})
+// Add a post
+const loaderOverlay = document.getElementById('loader-overlay');
 
-let posts = JSON.parse(localStorage.getItem("posts")) || [];
-
-function displayPosts() {
-  postsContainer.innerHTML = "";
-  posts.forEach((post, index) => {
-    const postEl = document.createElement("div");
-    postEl.className = "post";
-    postEl.innerHTML = `
-      <p>${post}</p>
-      <button class="deleteBtn" onclick="deletePost(${index})">Delete</button>
-    `;
-    postsContainer.appendChild(postEl);
-  });
+function showLoader() {
+	loaderOverlay.style.display = 'flex';
 }
 
-function addPost() {
-  const text = postInput.value.trim();
-  if (text === "") return;
-  posts.push(text);
-  localStorage.setItem("posts", JSON.stringify(posts));
-  postInput.value = "";
-  displayPosts();
+function hideLoader() {
+	loaderOverlay.style.display = 'none';
 }
 
-function deletePost(index) {
-  posts.splice(index, 1);
-  localStorage.setItem("posts", JSON.stringify(posts));
-  displayPosts();
-}
 
-addPostBtn.addEventListener("click", addPost);
-displayPosts();
-   
+const addPostBtn = document.getElementById('addPostBtn');
+addPostBtn && addPostBtn.addEventListener("click", async () => {
+    const userTitle = document.getElementById('post-title').value.trim();
+	const userDescription = document.getElementById('postdescrib').value.trim();
+    
+    if (!userTitle || !userDescription) {
+			Swal.fire({
+				icon: 'warning',
+				title: 'Missing Fields',
+				text: 'Please enter both a title and a description.',
+				confirmButtonColor: '#125b9a',
+			});
+			return;
+		}
+
+        showLoader();
+        submitPost.disabled = true;
+
+		try {
+			const {
+				data: { user },
+				error: authError,
+			} = await client.auth.getUser();
+
+			if (authError || !user) throw authError || new Error('User not found.');
+
+			const { data, error } = await client.from('posts').insert({
+				user_id: user.id,
+				title: userTitle,
+				description: userDescription,
+			});
+
+			if (error) {
+				console.error(error);
+				Swal.fire({
+					icon: 'error',
+					title: 'Post Failed',
+					text: 'There was a problem creating the post.',
+					confirmButtonColor: '#125b9a',
+				});
+			} else {
+				Swal.fire({
+					icon: 'success',
+					title: 'Post Created',
+					text: 'Your post has been successfully created!',
+					timer: 1500,
+					showConfirmButton: false,
+				});
+				document.getElementById('post-title').value = '';
+				document.getElementById('postdescrib').value = '';
+			}
+		} catch (err) {
+			console.error(err);
+			Swal.fire({
+				icon: 'error',
+				title: 'Unexpected Error',
+				text: 'Something went wrong. Please try again.',
+				confirmButtonColor: '#125b9a',
+			});
+		} finally {
+			hideLoader();
+			submitPost.disabled = false;
+		}
+});
+
+
 
