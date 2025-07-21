@@ -253,7 +253,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadUserInfo();
     }
 })
+
+
 // Add a post
+const addPostBtn = document.getElementById('addPostBtn');
 const loaderOverlay = document.getElementById('loader-overlay');
 
 function showLoader() {
@@ -265,10 +268,10 @@ function hideLoader() {
 }
 
 
-const addPostBtn = document.getElementById('addPostBtn');
 addPostBtn && addPostBtn.addEventListener("click", async () => {
     const userTitle = document.getElementById('post-title').value.trim();
 	const userDescription = document.getElementById('postdescrib').value.trim();
+    console.log(userTitle,userDescription);
     
     if (!userTitle || !userDescription) {
 			Swal.fire({
@@ -281,7 +284,7 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 		}
 
         showLoader();
-        submitPost.disabled = true;
+        addPostBtn.disabled = true;
 
 		try {
 			const {
@@ -291,9 +294,9 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 
 			if (authError || !user) throw authError || new Error('User not found.');
 
-			const { data, error } = await client.from('posts').insert({
+			const { data, error } = await client.from('Post').insert({
 				user_id: user.id,
-				title: userTitle,
+				tite: userTitle,
 				description: userDescription,
 			});
 
@@ -326,9 +329,196 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 			});
 		} finally {
 			hideLoader();
-			submitPost.disabled = false;
+			addPostBtn.disabled = false;
 		}
 });
 
+//read all posts
+
+if (window.location.pathname == './allblog.html') {
+	const current = document.getElementById('current');
+	current.style.textDecoration = 'underline red';
+
+	try {
+		const readAllPosts = async () => {
+			const { data, error } = await client.from('Post').select();
+			if (data) {
+				const box = document.getElementById('containerSection');
+				console.log(box);
+
+				box.innerHTML = data
+					.map(
+						({ id, title, description }) => `<div id='${id}' class="card bg-info text-white" style="width: 18rem;">
+						<div class="card-body">
+							<h5 class="card-title">${title}</h5>
+
+							<p class="card-text">${description} </p>
+
+						</div>
+					</div>`,
+					)
+					.join('');
+			} else {
+				console.log(error);
+			}
+		};
+		readAllPosts();
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+//read my posts
+const readMyPosts = async () => {
+	const {
+		data: { user },
+	} = await client.auth.getUser();
+	const { data, error } = await client.from('Post').select().eq('user_id', user.id);
+	console.log(data);
+	if (data) {
+		const box = document.getElementById('containerMyPost');
+		console.log(box);
+
+		box.innerHTML = data
+			.map(
+				({ id, tite, description }) => `<div id='${id}' class="card bg-info text-white" style="width: 18rem;">
+						<div class="card-body">
+							<h5 class="card-title">${tite}</h5>
+
+							<p class="card-text">${description} </p>
+
+						</div>
+						<div class="d-flex gap-4 px-4">
+						<button type="button" onclick="updatePost('${id}','${tite}','${description}')" class="btn btn-success">Edit</button>
+						<button type="button" onclick="deletePost('${id}')"  class="btn btn-danger">Delete</button></div>
+					</div>`,
+			)
+			.join('');
+	} else {
+		console.log(error);
+	}
+};
+if (window.location.pathname == './myblog.html') {
+	const current = document.getElementById('active');
+	current.style.textDecoration = 'underline red';
+
+	try {
+		readMyPosts();
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+
+//delete a post
+
+async function deletePost(postId) {
+	const swalWithBootstrapButtons = Swal.mixin({
+		customClass: {
+			confirmButton: 'btn btn-success',
+			cancelButton: 'btn btn-danger',
+		},
+		buttonsStyling: false,
+	});
+	swalWithBootstrapButtons
+		.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, delete it!',
+			cancelButtonText: 'No, cancel!',
+			reverseButtons: true,
+		})
+		.then(async (result) => {
+			if (result.isConfirmed) {
+				try {
+					showLoader();
+					const response = await client.from('Post').delete().eq('id', postId);
+					if (response) {
+						hideLoader();
+						alert('post has been deleted');
+						console.log(response);
+						readMyPosts();
+					} else {
+						console.log(error);
+					}
+				} catch (error) {
+					console.log(error);
+				} finally {
+					hideLoader();
+				}
+
+				swalWithBootstrapButtons.fire({
+					title: 'Deleted!',
+					text: 'Your file has been deleted.',
+					icon: 'success',
+				});
+			} else if (
+				/* Read more about handling dismissals below */
+				result.dismiss === Swal.DismissReason.cancel
+			) {
+				swalWithBootstrapButtons.fire({
+					title: 'Cancelled',
+					text: 'Your imaginary file is safe :)',
+					icon: 'error',
+				});
+			}
+		});
+}
+
+//update post
+
+async function updatePost(postId, postTitle, postDescription) {
+	const { value: formValues } = await Swal.fire({
+		title: 'Update Post',
+		html: `
+    <label > post title
+	<input id="swal-input1" class="swal1-input"  value = '${postTitle}' ></label>
+    <label > post description
+	<input id="swal-input2" class="swal2-input" style="margin: 0 !important;"   value = '${postDescription}' ></label>
+  `,
+		focusConfirm: false,
+		preConfirm: () => {
+			return [document.getElementById('swal-input1').value, document.getElementById('swal-input2').value];
+		},
+	});
+	try {
+		if (formValues) {
+			showLoader();
+			const [updatedTitle, updatedDescription] = formValues;
+			const { error } = await client
+				.from('Post')
+				.update({ tite: updatedTitle, description: updatedDescription })
+				.eq('id', postId);
+
+			if (error) {
+				console.log(error);
+			} else {
+				hideLoader();
+
+				Swal.fire({
+					icon: 'success',
+					title: 'your post has been updated',
+					confirmButtonColor: '#125b9a',
+				});
+				readMyPosts();
+			}
+		}
+	} catch (error) {
+		console.log(error);
+	} finally {
+		hideLoader();
+	}
+}
+
+
+// function getCurrentFileName() {
+//   return window.location.pathname.split('/').pop();
+// }
+
+// if (getCurrentFileName() === 'allblog.html') {
+//   // your code
+// }
 
 

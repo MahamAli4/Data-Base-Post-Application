@@ -15,7 +15,7 @@
   <div class="container-fluid">
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
-        <a class="navbar-brand text-color fs-3 " href="post.html">My Post Application</a>
+        <a class="navbar-brand text-color fs-3 fw-bold " href="post.html">My Post Application</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -26,10 +26,10 @@
               <a class="nav-link active" aria-current="page" href="post.html">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="myblog.html">My Blog</a>
+              <a class="nav-link" id="active" href="myblog.html">My Blog</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="allblog.html">All Blog</a>
+              <a class="nav-link" id="current" href="allblog.html">All Blog</a>
             </li>
           </ul>
           <div class="d-flex" role="search">
@@ -58,6 +58,12 @@
       <button id="addPostBtn">Add Post</button>
     </div>
   </div>
+
+		<div id="loader-overlay">
+			<div class="spinner-border text-primary loader-spinner" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
