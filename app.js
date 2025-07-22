@@ -258,6 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Add a post
 const addPostBtn = document.getElementById('addPostBtn');
 const loaderOverlay = document.getElementById('loader-overlay');
+// console.log(loaderOverlay);
 
 function showLoader() {
 	loaderOverlay.style.display = 'flex';
@@ -294,9 +295,9 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 
 			if (authError || !user) throw authError || new Error('User not found.');
 
-			const { data, error } = await client.from('Post').insert({
+			const { data, error } = await client.from('posts').insert({
 				user_id: user.id,
-				tite: userTitle,
+				title: userTitle,
 				description: userDescription,
 			});
 
@@ -325,7 +326,7 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 				icon: 'error',
 				title: 'Unexpected Error',
 				text: 'Something went wrong. Please try again.',
-				confirmButtonColor: '#125b9a',
+				confirmButtonColor: '#eb4108ff',
 			});
 		} finally {
 			hideLoader();
@@ -335,24 +336,25 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 
 //read all posts
 
-if (window.location.pathname == './allblog.html') {
+if (window.location.pathname == '/allblog.html') {
 	const current = document.getElementById('current');
-	current.style.textDecoration = 'underline red';
+    console.log(current);
+	// current.style.textDecoration = 'underline';
 
 	try {
 		const readAllPosts = async () => {
-			const { data, error } = await client.from('Post').select();
+			const { data, error } = await client.from('posts').select();
 			if (data) {
 				const box = document.getElementById('containerSection');
 				console.log(box);
 
 				box.innerHTML = data
 					.map(
-						({ id, title, description }) => `<div id='${id}' class="card bg-info text-white" style="width: 18rem;">
+						({ id, title, description }) => `<div id='${id}' class="card bg-info text-white bg-transparent p-3" style="width: 18rem;border: 2px solid #bba4f6;color: #bba4f6; border-radius: 10px;box-shadow: 2px 2px 7px #bba4f6;">
 						<div class="card-body">
-							<h5 class="card-title">${title}</h5>
+							<h5 class="card-title fs-2 fw-bold text-center">${title}</h5>
 
-							<p class="card-text">${description} </p>
+							<p class="card-text text-center">${description} </p>
 
 						</div>
 					</div>`,
@@ -373,23 +375,23 @@ const readMyPosts = async () => {
 	const {
 		data: { user },
 	} = await client.auth.getUser();
-	const { data, error } = await client.from('Post').select().eq('user_id', user.id);
+	const { data, error } = await client.from('posts').select().eq('user_id', user.id);
 	console.log(data);
 	if (data) {
-		const box = document.getElementById('containerMyPost');
-		console.log(box);
+		const box1 = document.getElementById('containerMyPost');
+		console.log(box1);
 
-		box.innerHTML = data
+		box1.innerHTML = data
 			.map(
-				({ id, tite, description }) => `<div id='${id}' class="card bg-info text-white" style="width: 18rem;">
+				({ id, title, description }) => `<div id='${id}' class="card bg-info text-white p-2 bg-transparent mt-5" style="width: 18rem;border: 2px solid #bba4f6;color: #bba4f6; border-radius: 10px;box-shadow: 2px 2px 7px #bba4f6;">
 						<div class="card-body">
-							<h5 class="card-title">${tite}</h5>
+							<h5 class="card-title fs-2 fw-bold">${title}</h5>
 
 							<p class="card-text">${description} </p>
 
 						</div>
-						<div class="d-flex gap-4 px-4">
-						<button type="button" onclick="updatePost('${id}','${tite}','${description}')" class="btn btn-success">Edit</button>
+						<div class="d-flex gap-2 px-3 py-2">
+						<button type="button" onclick="updatePost('${id}','${title}','${description}')" class="btn btn-success">Edit</button>
 						<button type="button" onclick="deletePost('${id}')"  class="btn btn-danger">Delete</button></div>
 					</div>`,
 			)
@@ -398,9 +400,10 @@ const readMyPosts = async () => {
 		console.log(error);
 	}
 };
-if (window.location.pathname == './myblog.html') {
-	const current = document.getElementById('active');
-	current.style.textDecoration = 'underline red';
+if (window.location.pathname == '/myblog.html') {
+	const active = document.getElementById('active');
+    console.log(active);
+	// current.style.textDecoration = 'underline red';
 
 	try {
 		readMyPosts();
@@ -408,6 +411,21 @@ if (window.location.pathname == './myblog.html') {
 		console.log(error);
 	}
 }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const links = document.querySelectorAll(".nav-link");
+
+  links.forEach((link) => {
+    const href = link.getAttribute("href");
+    const currentPath = window.location.pathname.split("/").pop();
+
+    if (href === currentPath) {
+      link.classList.add("active");
+    }
+  });
+});
+
 
 
 //delete a post
@@ -434,7 +452,7 @@ async function deletePost(postId) {
 			if (result.isConfirmed) {
 				try {
 					showLoader();
-					const response = await client.from('Post').delete().eq('id', postId);
+					const response = await client.from('posts').delete().eq('id', postId);
 					if (response) {
 						hideLoader();
 						alert('post has been deleted');
@@ -488,8 +506,8 @@ async function updatePost(postId, postTitle, postDescription) {
 			showLoader();
 			const [updatedTitle, updatedDescription] = formValues;
 			const { error } = await client
-				.from('Post')
-				.update({ tite: updatedTitle, description: updatedDescription })
+				.from('posts')
+				.update({ title: updatedTitle, description: updatedDescription })
 				.eq('id', postId);
 
 			if (error) {
