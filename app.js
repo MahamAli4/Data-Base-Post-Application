@@ -148,7 +148,7 @@ document.getElementById('googleSignIn')?.addEventListener("click", async () => {
 	try {
 		const redirecToo = window.location.hostname === '127.0.0.1'
 			? window.location.origin + '/post.html'
-			: window.location.origin + '/Data-Base-Post-Application/'
+			: window.location.origin + '/Data-Base-Post-Application/post.html'
 
 		const { error } = await client.auth.signInWithOAuth({
 			provider: 'google',
