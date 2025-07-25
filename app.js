@@ -361,7 +361,7 @@ if (window.location.pathname == '/allblog.html') {
 
 				box.innerHTML = data
 					.map(
-						({ id, title, description }) => `<div id='${id}' class="card bg-info text-white bg-transparent p-3" style="width: 18rem;border: 2px solid #bba4f6;color: #bba4f6; border-radius: 10px;box-shadow: 2px 2px 7px #bba4f6;">
+						({ id, title, description }) => `<div id='${id}' class="card bg-info text-white bg-transparent p-3 mt-5" style="width: 18rem;border: 2px solid #bba4f6;color: #bba4f6; border-radius: 10px;box-shadow: 2px 2px 7px #bba4f6;">
 						<div class="card-body">
 							<h5 class="card-title fs-2 fw-bold text-center">${title}</h5>
 
