@@ -400,7 +400,7 @@ const readMyPosts = async () => {
 		console.log(error);
 	}
 };
-if (window.location.pathname == '/myblog.html') {
+if (window.location.pathname == '/myblog.html' || "Data-Base-Post-Application/allblog.html") {
 	const active = document.getElementById('active');
     console.log(active);
 	// current.style.textDecoration = 'underline red';
