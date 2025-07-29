@@ -161,7 +161,7 @@ document.getElementById('googleSignIn')?.addEventListener("click", async () => {
 			Swal.fire({ icon: 'error', title: 'Google Sign-In Failed', text: error.message });
 		}
 	} catch (error) {
-        console.log('Google Login Error', error);
+		console.log('Google Login Error', error);
 		alert(error.message || 'Google login failed')
 	}
 
@@ -382,19 +382,26 @@ if (window.location.pathname == '/allblog.html' || window.location.pathname == '
 }
 
 //read my posts
-const readMyPosts = async () => {
-	const {
-		data: { user },
-	} = await client.auth.getUser();
-	const { data, error } = await client.from('posts').select().eq('user_id', user.id);
-	console.log(data);
-	if (data) {
-		const box1 = document.getElementById('containerMyPost');
-		console.log(box1);
 
-		box1.innerHTML = data
-			.map(
-				({ id, title, description }) => `<div id='${id}' class="card bg-info text-white p-2 bg-transparent mt-5" style="width: 18rem;border: 2px solid #bba4f6;color: #bba4f6; border-radius: 10px;box-shadow: 2px 2px 7px #bba4f6;">
+if (window.location.pathname == '/myblog.html' || window.location.pathname == "Data-Base-Post-Application/myblog.html") {
+	const active = document.getElementById('active');
+	console.log(active);
+	// current.style.textDecoration = 'underline red';
+
+	try {
+		const readMyPosts = async () => {
+			const {
+				data: { user },
+			} = await client.auth.getUser();
+			const { data, error } = await client.from('posts').select().eq('user_id', user.id);
+			console.log(data);
+			if (data) {
+				const box1 = document.getElementById('containerMyPost');
+				console.log(box1);
+
+				box1.innerHTML = data
+					.map(
+						({ id, title, description }) => `<div id='${id}' class="card bg-info text-white p-2 bg-transparent mt-5" style="width: 18rem;border: 2px solid #bba4f6;color: #bba4f6; border-radius: 10px;box-shadow: 2px 2px 7px #bba4f6;">
 						<div class="card-body">
 							<h5 class="card-title fs-2 fw-bold">${title}</h5>
 
@@ -405,18 +412,12 @@ const readMyPosts = async () => {
 						<button type="button" onclick="updatePost('${id}','${title}','${description}')" class="btn btn-success">Edit</button>
 						<button type="button" onclick="deletePost('${id}')"  class="btn btn-danger">Delete</button></div>
 					</div>`,
-			)
-			.join('');
-	} else {
-		console.log(error);
-	}
-};
-if (window.location.pathname == '/myblog.html' || window.location.pathname == "Data-Base-Post-Application/myblog.html") {
-	const active = document.getElementById('active');
-	console.log(active);
-	// current.style.textDecoration = 'underline red';
-
-	try {
+					)
+					.join('');
+			} else {
+				console.log(error);
+			}
+		};
 		readMyPosts();
 	} catch (error) {
 		console.log(error);
