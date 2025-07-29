@@ -347,7 +347,7 @@ addPostBtn && addPostBtn.addEventListener("click", async () => {
 
 //read all posts
 
-if (window.location.pathname == '/allblog.html') {
+if (window.location.pathname == '/allblog.html' || window.location.pathname == '/Data-Base-Post-Application/allblog.html') {
 	const current = document.getElementById('current');
 	console.log(current);
 	// current.style.textDecoration = 'underline';
@@ -411,7 +411,7 @@ const readMyPosts = async () => {
 		console.log(error);
 	}
 };
-if (window.location.pathname == '/myblog.html' || "Data-Base-Post-Application/allblog.html") {
+if (window.location.pathname == '/myblog.html' || window.location.pathname == "Data-Base-Post-Application/myblog.html") {
 	const active = document.getElementById('active');
 	console.log(active);
 	// current.style.textDecoration = 'underline red';
